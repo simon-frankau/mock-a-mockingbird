@@ -3,7 +3,7 @@
 I found 1-3 really much harder than the rest of the questions in this
 chapter.
 
-## Problem 1
+### Problem 1
 
 "A is fond of B if AB = B" - More mathematically, B is a fixed point
 of A.
@@ -26,7 +26,7 @@ X' = (X . M) (X . M)
 => X X' = X'
 ```
 
-## Problem 2
+### Problem 2
 
 Let's define X:
 
@@ -45,7 +45,7 @@ So, `(X X)` is its own fixed point.
 
 (This is `Y M`.)
 
-## Problem 3
+### Problem 3
 
 Let's find the value `X` where `A` agrees with `B . A`.
 
@@ -76,7 +76,7 @@ don't need something as "simple" as M. I guess the way the fixed-point
 behaviour is introduced is that you can find the point at which the
 "agreeable bird" agrees with *itself* composed with something else.
 
-## Problem 4
+### Problem 4
 
 If C is agreeable, then for any bird D, there'll be a bird X s.t.
 `C X = (D . B) X`. This means
@@ -88,27 +88,27 @@ A (B X) = D (B X)
 
 Setting `Y = B X~, then we have `A Y = D Y`, so A is agreeable too.
 
-## Problem 5
+### Problem 5
 
 Show there's a bird s.t. `D x = A (B (C x))`.
 
 Composition means there's a bird `E = B . C`, `D x = A (E x)`, and
 then `D = A . E`.
 
-## Problem 6
+### Problem 6
 
 Problem 1 means `(A . B)` has a fixed point `y`. Define `x = B y`, and
 the result follows.
 
-## Problem 7
+### Problem 7
 
 `x = y =` the fixed point of the bird.
 
-## Problem 8
+### Problem 8
 
 If `A` is happy, `A . A` is normal.
 
-## Problem 9
+### Problem 9
 
 "Kestrels" are the constants combinator K, that makes a constrant
 function when given a value to always return.
@@ -122,47 +122,77 @@ M (K . M) x = (K . M) (K . M) x
             = M (K . M)
 ```
 
-# Problem 10
+### Problem 10
 
 For all z, `x z = y`. Deos this mean `x a = y a` for some a?
 
 `x a = y`, so this is only true if `y = y a` for some a - and it's
 quite possible to create a bird that never returns itself.
 
-# Problem 11
+### Problem 11
 
 If `K K = K`, then `K K x = K x = K`.
 
-# Problem 12
+### Problem 12
 
 If `(K x) (K x) = (K x)` then for any y, `(K x) (K x) y = K x y`, so
 `K x = x`.
 
-# Problem 13
+### Problem 13
 
 `A x = A = A y`
 
-# Problem 14
+### Problem 14
 
 `A x y = A y = A`
 
-# Problem 15
+### Problem 15
 
 `A x = A`, so `A x` is also hopelessly egocentric.
 
-# Problem 16
+### Problem 16
 
 If `K x = K y`, then `K x K = K y K`, so `x = y`.
 
-# Problem 17
+### Problem 17
 
 If A x = y for all x, and A x = z for all x, then x = z.
 
-# Problem 18
+### Problem 18
 
 If `K (K x) = K x`, then `K x = x` by cancellation law.
 
-# Problem 19
+### Problem 19
 
 If K is hopelessly egocentric, `K x K = K K = K`, but also `K x K =
 x`, so `K = x`. `K` is the only bird in the forest.
+
+### Problem 20
+
+The identity function is nice and straightforward. Phew.
+
+For all B, there's an x s.t. `I x = B x`, i.e. `B x = x`, so B is fond
+of `x`, and all birds are fond of some bird.
+
+### Problem 21
+
+Yes, it's agreeable - for each bird, it agrees on the bird that it is
+fond of.
+
+### Problem 22
+
+1 and 2 are equivalent - if I agrees with B on a bird, B is fond of
+that bird.
+
+Say `B I = B` and `B B = I`. Then x and y can be I and B, they are
+compatible, but B is not fond of any bird.
+
+### Problem 23
+
+`I x = x`. If hopelessly egocentric, `I x = I`, hence `x = I`, hence I
+is the only bird in the forest.
+
+## Larks
+
+### Problem 24
+
