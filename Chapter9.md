@@ -3,6 +3,8 @@
 I found 1-3 really much harder than the rest of the questions in this
 chapter.
 
+## To Mock a Mockingbird
+
 ### Problem 1
 
 "A is fond of B if AB = B" - More mathematically, B is a fixed point
@@ -108,6 +110,8 @@ the result follows.
 
 If `A` is happy, `A . A` is normal.
 
+## Hopeless Egocentricity
+
 ### Problem 9
 
 "Kestrels" are the constants combinator K, that makes a constrant
@@ -167,6 +171,8 @@ If `K (K x) = K x`, then `K x = x` by cancellation law.
 If K is hopelessly egocentric, `K x K = K K = K`, but also `K x K =
 x`, so `K = x`. `K` is the only bird in the forest.
 
+## Identity birds
+
 ### Problem 20
 
 The identity function is nice and straightforward. Phew.
@@ -196,3 +202,86 @@ is the only bird in the forest.
 
 ### Problem 24
 
+`L I = M`
+
+### Problem 25
+
+We want to find a fixed point for all birds.
+
+Working backwards, `L x y = x (y y) = x (M y) = (x . M) y`, so `L x =
+x . M`. We want `M (x . M)`, but it's also ok to apply x to this,
+since it's a fixed point - `x (M (x . M)) = (x . M) (x . M) = (L x)(L
+x)`.
+
+Let's check, by expand the left L: `(L x)(L x) = x ((L x)(L x))`. Yep,
+looks good.
+
+### Problem 26
+
+A hopelessly egotistic lark can be used to generate the fixed point of
+any bird that will also be a lark. So, every bird is fond of it.
+
+### Problem 27
+
+Why can't `L K = K`? `L K x y = K (x x) y = x x`, and `K x y = x`.
+
+`x x = x` for all `x`.
+
+This means K must be egocentric, and by 11 it's hopelessly egocentric,
+and there's only 1 bird. This contradicts L and K being different.
+
+### Problem 28
+
+`L = K L x = L x`, set `x = B (L B)`, which is a fixed point of `B`. We have:
+
+`K L (B (L B)) = L` and `K L (B (L B)) = L (B (L B)) = B ((L B) (L
+B))`, so `L` is a fixed point of all birds.
+
+### Problem 29
+
+This is where I write code to brute-force the search, because it's
+fun!
+
+```
+$ ./Combinator
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+(((L ((L (L L)) (L (L L)))) ((L L) L)),True)
+11
+12
+((((L (L L)) (L (L L))) ((L (L L)) ((L L) L))),True)
+((((L (L L)) ((L L) L)) ((L (L L)) (L (L L)))),True)
+((((L (L L)) ((L L) L)) ((L (L L)) ((L L) L))),True)
+```
+
+The key result is really:
+
+```
+((L (L L)) (L (L L))) ((L (L L)) (L (L L)))
+```
+
+We can rewrite this by saying `M = L (L L)`, which makes this
+expression `(M M) (M M)`. We find
+
+```
+M x = L (L L) x = L L (x x) = L ((x x) (x x))
+```
+
+Then we define `N = (M M) (M M)`:
+
+```
+N = (M M) (M M)
+  = (L ((M M) (M M)) (M M)
+  = ((M M) (M M)) ((M M) (M M))
+  = N N
+```
+
+QED!
