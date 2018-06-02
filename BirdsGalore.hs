@@ -13,6 +13,8 @@ data Expr = Ap Expr Expr
           | K
           | M
           | I
+          | C
+          | T
           | Var Integer
             deriving (Eq, Ord)
 
@@ -26,6 +28,8 @@ show' _ W = "W"
 show' _ K = "K"
 show' _ M = "M"
 show' _ I = "I"
+show' _ C = "C"
+show' _ T = "T"
 show' _ (Var i) = "X" ++ show i
 
 ------------------------------------------------------------------------
@@ -41,10 +45,12 @@ exprOfSize xs = aux where
 
 step :: Expr -> Maybe Expr
 -- Actual combinator cases
-step (Ap (Ap W x) y) = Just $ Ap (Ap x y) y
-step (Ap (Ap K x) y) = Just $ x
-step     (Ap M x)    = Just $ Ap x x
-step     (Ap I x)    = Just $ x
+step     (Ap (Ap W x) y)    = Just $ Ap (Ap x y) y
+step     (Ap (Ap K x) y)    = Just $ x
+step         (Ap M x)       = Just $ Ap x x
+step         (Ap I x)       = Just $ x
+step (Ap (Ap (Ap C x) y) z) = Just $ Ap (Ap x z) y
+step     (Ap (Ap T x) y)    = Just $ Ap y x
 -- No match? Then try digging down the left.
 step (Ap l r) = flip Ap r <$> step l
 -- Still didn't work?
@@ -99,3 +105,5 @@ main = do
   solve 13 M [W, K]
   solve 14 M [W, I]
   solve 15 I [W, K]
+  solve 16 I [C, K]
+  solve 17 T [C, I]
