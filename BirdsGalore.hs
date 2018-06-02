@@ -12,6 +12,7 @@ data Expr = Ap Expr Expr
           | W
           | K
           | M
+          | I
           | Var Integer
             deriving (Eq, Ord)
 
@@ -24,6 +25,7 @@ show' needBracket (Ap e1 e2) =
 show' _ W = "W"
 show' _ K = "K"
 show' _ M = "M"
+show' _ I = "I"
 show' _ (Var i) = "X" ++ show i
 
 ------------------------------------------------------------------------
@@ -42,6 +44,7 @@ step :: Expr -> Maybe Expr
 step (Ap (Ap W x) y) = Just $ Ap (Ap x y) y
 step (Ap (Ap K x) y) = Just $ x
 step     (Ap M x)    = Just $ Ap x x
+step     (Ap I x)    = Just $ x
 -- No match? Then try digging down the left.
 step (Ap l r) = flip Ap r <$> step l
 -- Still didn't work?
@@ -57,7 +60,7 @@ boundSteps i x = case step x of
 ------------------------------------------------------------------------
 -- Print the reductions
 
-allExprs = concatMap (exprOfSize [W, K]) [1..]
+allExprsOf xs = concatMap (exprOfSize xs) [1..]
 
 maxSteps = 10
 
@@ -78,13 +81,21 @@ findNVars e = fst $ head $
               [0..]
 
 -- Find a way to build a combinator using a different set of combinators
-findExpr :: Expr -> Expr
-findExpr target = head $ filter isTarget allExprs where
+findExpr :: Expr -> [Expr] -> Expr
+findExpr target avail = head $ filter isTarget $ allExprsOf avail where
   numVars = findNVars target
   applyReduce = boundSteps maxSteps . flip applyNVars numVars
   targetWithVars = applyReduce target
   isTarget candidate = applyReduce candidate == targetWithVars
 
+-- Find an pretty-print a solution
+solve :: Integer -> Expr -> [Expr] -> IO ()
+solve problemNum target avail = do
+  let solution = findExpr target avail
+  putStrLn $ "Problem " ++ show problemNum ++ ": " ++
+             show target ++ " = " ++ show solution
+
 main = do
-  -- Problem 13: Build a Mockinbird from W and K.
-  print $ findExpr M
+  solve 13 M [W, K]
+  solve 14 M [W, I]
+  solve 15 I [W, K]
