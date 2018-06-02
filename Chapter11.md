@@ -142,3 +142,30 @@ E' x y1 y2 y3 z1 z2 z3
 
 E' = B (B D1) (D (D D))
 ```
+
+At this point, there's the question of whether all possible
+"compositors" can be constructed from `B` - whether we can introduce
+any bracketing that we like. We can. If you think of the expression as
+a binary tree (applications as interior nodes), `B` introduces an
+anticlockwise rotation. If we keep rotating the top-most node that has
+a non-variable as its right child, we end up with an expression in
+`B`s that introduces the brackets that we need. A key invariant is
+that all the variables remain on the right-hand side of the tree, and
+all the `B`s on the left, since we can't commute the order of leaf
+nodes.
+
+"Bluebird.hs" implements this algorithm, and generates some
+alternative solutions to the problems in this chapter:
+
+```
+X (X X) -> B
+X X (X X) -> B B
+X (X X X) -> B B B
+X X (X X X) -> B (B B B)
+X (X X X X) -> B (B B B) B
+X X X (X X) -> B (B B)
+X (X (X X)) -> B (B B) B
+X (X X) (X X) -> B B (B B)
+X (X X X) (X X X) -> B (B B B) (B (B B B))
+```
+
