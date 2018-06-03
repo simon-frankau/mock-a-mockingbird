@@ -8,7 +8,7 @@ import Data.Maybe(fromJust)
 ------------------------------------------------------------------------
 -- Expression type and pretty-printer
 
-data Combinator = W | K | M | I | C | T | B | R | F | E | V
+data Combinator = W | K | M | I | C | T | B | R | F | E | V | CStar
                   deriving (Show, Eq, Ord)
 
 data Expr = Ap Expr Expr
@@ -38,17 +38,18 @@ exprOfSize xs = aux where
 
 step :: Expr -> Maybe Expr
 -- Actual combinator cases
-step             (Ap (Ap (Co W) x) y)          = Just $ Ap (Ap x y) y
+step             (Ap (Ap (Co W) x) y)          = Just $ x # y # y
 step             (Ap (Ap (Co K) x) y)          = Just $ x
-step                 (Ap (Co M) x)             = Just $ Ap x x
+step                 (Ap (Co M) x)             = Just $ x # x
 step                 (Ap (Co I) x)             = Just $ x
-step         (Ap (Ap (Ap (Co C) x) y) z)       = Just $ Ap (Ap x z) y
-step             (Ap (Ap (Co T) x) y)          = Just $ Ap y x
-step         (Ap (Ap (Ap (Co B) x) y) z)       = Just $ Ap x (Ap y z)
-step         (Ap (Ap (Ap (Co R) x) y) z)       = Just $ Ap (Ap y z) x
-step         (Ap (Ap (Ap (Co F) x) y) z)       = Just $ Ap (Ap z y) x
-step (Ap (Ap (Ap (Ap (Ap (Co E) x) y) z) w) v) = Just $ Ap (Ap x y) (Ap (Ap z w) v)
-step         (Ap (Ap (Ap (Co V) x) y) z)       = Just $ Ap (Ap z x) y
+step         (Ap (Ap (Ap (Co C) x) y) z)       = Just $ x # z # y
+step             (Ap (Ap (Co T) x) y)          = Just $ y # x
+step         (Ap (Ap (Ap (Co B) x) y) z)       = Just $ x # (y # z)
+step         (Ap (Ap (Ap (Co R) x) y) z)       = Just $ y # z # x
+step         (Ap (Ap (Ap (Co F) x) y) z)       = Just $ z # y # x
+step (Ap (Ap (Ap (Ap (Ap (Co E) x) y) z) w) v) = Just $ x # y # (z # w # v)
+step         (Ap (Ap (Ap (Co V) x) y) z)       = Just $ z # x # y
+step (Ap (Ap (Ap (Ap (Co CStar) x) y) z) w)    = Just $ x # y # w # z
 -- No match? Then try digging down the left.
 step (Ap l r) = flip Ap r <$> step l
 -- Still didn't work?
@@ -60,6 +61,8 @@ boundSteps 0 _ = Nothing
 boundSteps i x = case step x of
   Just x' -> boundSteps (i - 1) x'
   Nothing -> return x
+
+a # b = Ap a b
 
 ------------------------------------------------------------------------
 -- Print the reductions
@@ -77,6 +80,11 @@ applyNVars e = aux where
   aux 0 = e
   aux i = Ap (aux $ i - 1) (Var i)
 
+maxVar :: Expr -> Integer
+maxVar (Ap x y) = maxVar x `max` maxVar y
+maxVar (Var i) = i
+maxVar _ = 0
+
 -- Find the number of vars required to fully reduce an expression
 findNVars :: Expr -> Integer
 findNVars e = fst $ head $
@@ -93,10 +101,23 @@ findExpr target avail = head $ filter isTarget $ allExprsOf avail where
   targetWithVars = applyReduce targetExpr
   isTarget candidate = applyReduce candidate == targetWithVars
 
+-- Find an expression that permutes the supplied parameters as needed
+findExpr' :: Expr -> [Combinator] -> Expr
+findExpr' target avail = head $ filter isTarget $ allExprsOf avail where
+  numVars = maxVar target
+  applyReduce = boundSteps maxSteps . flip applyNVars numVars
+  isTarget candidate = applyReduce candidate == Just target
+
 -- Find an pretty-print a solution
 solve :: Integer -> Combinator -> [Combinator] -> IO ()
 solve problemNum target avail = do
   let solution = findExpr target avail
+  putStrLn $ "Problem " ++ show problemNum ++ ": " ++
+             show target ++ " = " ++ show solution
+
+solve' :: Integer -> Expr -> [Combinator] -> IO ()
+solve' problemNum target avail = do
+  let solution = findExpr' target avail
   putStrLn $ "Problem " ++ show problemNum ++ ": " ++
              show target ++ " = " ++ show solution
 
@@ -125,3 +146,14 @@ main = do
   solve 28 V [F, R]
   solve 29 F [C, V]
   solve 30 I [R, K]
+  -- For the ones where we're not reusing the combinators, don't
+  -- bother adding them as actual combinators.
+  solve' 31 (Var 1 # Var 2 # Var 4 # Var 3) [B, C]
+  solve' 32 (Var 1 # Var 3 # Var 4 # Var 2) [B, C]
+  solve' 33 (Var 1 # Var 4 # Var 3 # Var 2) [B, C]
+  solve' 34 (Var 1 # Var 4 # Var 2 # Var 3) [B, C] -- Typo in the book
+  solve' 35 (Var 1 # Var 2 # Var 3 # Var 5 # Var 4) [B, C]
+  solve' 35 (Var 1 # Var 2 # Var 4 # Var 5 # Var 3) [B, C]
+  solve' 35 (Var 1 # Var 2 # Var 5 # Var 4 # Var 3) [B, C]
+  solve' 35 (Var 1 # Var 2 # Var 5 # Var 3 # Var 4) [B, C]
+  solve 36 V [CStar, T]

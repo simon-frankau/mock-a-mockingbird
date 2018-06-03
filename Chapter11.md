@@ -223,4 +223,15 @@ C x = R R R x = R x R
 
 ## Some Relatives
 
-TODO
+Solved by BirdsGalore.hs:
+
+```
+Problem 31: X1 X2 X4 X3 = B C
+Problem 32: X1 X3 X4 X2 = B C (B C)
+Problem 33: X1 X4 X3 X2 = B C (B (B C) C)
+Problem 34: X1 X4 X2 X3 = B (B C) C
+Problem 35: X1 X2 X3 X5 X4 = B (B C)
+Problem 35: X1 X2 X4 X5 X3 = B (B C (B C))
+Problem 35: X1 X2 X5 X4 X3 = B (B C (B (B C) C))
+Problem 35: X1 X2 X5 X3 X4 = B (B (B C) C)
+```
