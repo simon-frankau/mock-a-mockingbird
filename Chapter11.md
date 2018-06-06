@@ -235,3 +235,123 @@ Problem 35: X1 X2 X4 X5 X3 = B (B C (B C))
 Problem 35: X1 X2 X5 X4 X3 = B (B C (B (B C) C))
 Problem 35: X1 X2 X5 X3 X4 = B (B (B C) C)
 ```
+
+Having been doing these questions, I've started to wonder if B and T
+or B and C perform the same function as B does for bracketing, but for
+general transposition of arguments.
+
+If we can construct "forward-starting" transpositions, and chain them
+together, then we can construct arbitrary permutations. If we can then
+chain a compositor on the end, we can build an arbitrary rearrangement
+of the given arguments.
+
+How do we construct a "forward-starting" combinator? Use lots of `B`s.
+For example:
+
+```
+C x1 x2 x3 x4 x5 x6 = x1 x3 x2 x4 x5 x6
+
+B C x1 x2 x3 x4 x5 x6 = C (x1 x2) x3 x4 x5 xy6
+                      = x1 x2 x4 x3 x5 x6
+
+B (B C) x1 x2 x3 x4 x5 x6 = B C (x1 x2) x3 x4 x5 x6
+                          = C (x1 x2 x3) x4 x5 x6
+                          = x1 x2 x3 x5 x4 x6
+
+B (B (B C)) x1 x2 x3 x4 x5 x6 = B (B C) (x1 x2) x3 x4 x5 x6
+                              = (B C) (x1 x2 x3) x4 x5 x6
+                              = C (x1 x2 x3 x4) x5 x6
+                              = x1 x2 x3 x4 x6 x5
+```
+
+Then, we need to chain these transpositions together. Let's say we
+want to create `X x1 x2 x3 x4 = x2 x4 x1 x3`. We can swap the first
+pair, last pair, and middle pair. We do this by making the `x1` of the
+list into the next item in the chain, and chain them together:
+
+```
+(B (B C)) (B (B (B C))) (B C) I x1 x2 x3 x4
+  = B C ((B (B (B C))) (B C)) I x1 x2 x3 x4
+  = C (B (B (B C)) (B C) I) x1 x2 x3 x4
+  = B (B (B C)) (B C) I x2 x1 x3 x4
+  = B (B C) (B C I) x2 x1 x3 x4
+  = B C (B C I x2) x1 x3 x4
+  = C (B C I x2 x1) x3 x4
+  = (B C I x2 x1) x4 x3
+  = C (I x2) x1 x4 x3
+  = (I x2) x4 x1 x3
+  = I x2 x4 x1 x3
+  = x2 x4 x1 x3
+```
+
+Note that I've used an `I` identity operator to finish off this
+"chain" of transpositions. Without `I`, we can create any permutation
+and bracketing that leaves the left-hand most argument untouched. I
+snuck a peek ahead in the book, and these are a kind of *regular*
+combinator.
+
+If we add in `W`, we can then duplicate some of the variables (chained
+in with transpositions etc. as needed before we finally insert
+brackets. In other words, we've just shown we can construct all
+regular combinators using `B`, `C` and `W`, just as mentioned on page
+131.
+
+(The combinators we construct here can't drop variables, which I can't
+see in the book definitions, so we're just going to work with those
+ones that can't drop stuff - i.e. we ban K.)
+
+Stepping back from the regular combinators, what permutations have we
+seen? We now have:
+
+```
+I x y z = x y z
+T x y z = y x z
+C x y z = x z y
+R x y z = y z x
+F x y z = z y x
+V x y z = z x y
+```
+
+All of these can be created from B and T:
+
+```
+T = T
+I = C T
+C = R R R
+R = B B T
+F = B C R
+V = C F
+```
+
+Indeed, all of these can be created from B and C, except T and I.
+Given one, we can get the other:
+
+```
+C I = T
+C T = I
+```
+
+What about deriving I just from B and C? I found you can get an
+*extensional* version of I:
+
+```
+B C C x y z = C (C x) y z
+            = C x z y
+            = x y z
+```
+
+It's not really quite the same as I, though, is it?
+
+On the other hand, it means that all combinators of order 3 and above
+can have this as their last step in a regular combinator constructor
+chain, so we can construct all proper combinators of order 3 and above
+with B, C and W!
+
+All proper combinators of order 2 or 1 can be constructed if they use
+W to repeat a variable (making them at least order 3 for the final
+step). This means that the only combinators we can't construct from B,
+C and W are I, T and M! (Although we can probably construct
+extensional equivalents.)
+
+Anyway, enough of my DIY re-research/re-invention of combinatory
+logic, and on with the book...
