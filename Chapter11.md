@@ -234,6 +234,7 @@ Problem 35: X1 X2 X3 X5 X4 = B (B C)
 Problem 35: X1 X2 X4 X5 X3 = B (B C (B C))
 Problem 35: X1 X2 X5 X4 X3 = B (B C (B (B C) C))
 Problem 35: X1 X2 X5 X3 X4 = B (B (B C) C)
+Problem 36: V = CStar T
 ```
 
 Having been doing these questions, I've started to wonder if B and T

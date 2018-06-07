@@ -28,13 +28,37 @@ show' _ (Var i) = "X" ++ show i
 ------------------------------------------------------------------------
 -- Build and reduce expressions
 
+-- Maximum number of times a combinator can be applied before it can be
+-- fully reduced. "Nothing" if that doesn't apply.
+maxApp :: Combinator -> Maybe Integer
+maxApp W = Nothing -- Repeated use of variable means it can expand expressions.
+maxApp K = Just 2
+maxApp M = Nothing -- Ditto
+maxApp I = Just 1
+maxApp C = Just 3
+maxApp T = Just 2
+maxApp B = Just 3
+maxApp R = Just 3
+maxApp F = Just 3
+maxApp E = Just 5
+maxApp V = Just 3
+maxApp CStar = Just 4
+maxApp Q = Just 3
+
+i `lessThanMaxApp` x =
+  case maxApp x of
+    Just j  -> i < j
+    Nothing -> True
+
 -- Build expression with limited leaves.
 exprOfSize :: [Combinator] -> Integer -> [Expr]
-exprOfSize xs = aux where
-  aux 0 = []
-  aux 1 = map Co xs
-  aux n = concatMap doAp [1..n - 1] where
-    doAp i = Ap <$> aux i <*> aux (n - i)
+exprOfSize xs = aux 0 where
+  -- First arg is number of applies we're inside, second is number of
+  -- leaves (combinators) we want.
+  aux _ 0 = []
+  aux i 1 = map Co $ filter (i `lessThanMaxApp`) xs
+  aux i n = concatMap doAp [1..n - 1] where
+    doAp j = Ap <$> aux (i + 1)j <*> aux 0 (n - j)
 
 step :: Expr -> Maybe Expr
 -- Actual combinator cases
