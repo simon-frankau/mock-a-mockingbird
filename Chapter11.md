@@ -355,3 +355,41 @@ extensional equivalents.)
 
 Anyway, enough of my DIY re-research/re-invention of combinatory
 logic, and on with the book...
+
+## Queer Birds
+
+### Problems 37-47
+
+Done by BirdsGalore.hs, with the exception of the problems below, and
+some which I haven't found an efficient search for yet (TODO):
+
+```
+Problem 37: X2 (X1 X3) = C B
+Problem 39: X2 (X3 X1) = B (T B) (B B (B B T))
+Problem 41: X3 (X1 X2) = B T
+Problem 42: X3 (X2 X1) = B (T (B T)) (B B T)
+Problem 45: B = Q T (Q Q)
+Problem 46: C = Q Q (Q T)
+```
+
+### Problem 37
+
+It's `C B`, by inspection.
+
+### Problem 40
+
+```
+C Q1 = Q2
+C Q2 = Q1
+```
+
+### Problem 43
+
+```
+C Q3 = Q4
+C Q4 = Q3
+```
+
+### Problem 44
+
+`Q1 T`, by inspection.

@@ -8,7 +8,7 @@ import Data.Maybe(fromJust)
 ------------------------------------------------------------------------
 -- Expression type and pretty-printer
 
-data Combinator = W | K | M | I | C | T | B | R | F | E | V | CStar
+data Combinator = W | K | M | I | C | T | B | R | F | E | V | CStar | Q
                   deriving (Show, Eq, Ord)
 
 data Expr = Ap Expr Expr
@@ -49,6 +49,7 @@ step         (Ap (Ap (Ap (Co R) x) y) z)       = Just $ y # z # x
 step         (Ap (Ap (Ap (Co F) x) y) z)       = Just $ z # y # x
 step (Ap (Ap (Ap (Ap (Ap (Co E) x) y) z) w) v) = Just $ x # y # (z # w # v)
 step         (Ap (Ap (Ap (Co V) x) y) z)       = Just $ z # x # y
+step         (Ap (Ap (Ap (Co Q) x) y) z)       = Just $ y # (x # z)
 step (Ap (Ap (Ap (Ap (Co CStar) x) y) z) w)    = Just $ x # y # w # z
 -- No match? Then try digging down the left.
 step (Ap l r) = flip Ap r <$> step l
@@ -148,12 +149,23 @@ main = do
   solve 30 I [R, K]
   -- For the ones where we're not reusing the combinators, don't
   -- bother adding them as actual combinators.
-  solve' 31 (Var 1 # Var 2 # Var 4 # Var 3) [B, C]
-  solve' 32 (Var 1 # Var 3 # Var 4 # Var 2) [B, C]
-  solve' 33 (Var 1 # Var 4 # Var 3 # Var 2) [B, C]
-  solve' 34 (Var 1 # Var 4 # Var 2 # Var 3) [B, C] -- Typo in the book
-  solve' 35 (Var 1 # Var 2 # Var 3 # Var 5 # Var 4) [B, C]
-  solve' 35 (Var 1 # Var 2 # Var 4 # Var 5 # Var 3) [B, C]
-  solve' 35 (Var 1 # Var 2 # Var 5 # Var 4 # Var 3) [B, C]
-  solve' 35 (Var 1 # Var 2 # Var 5 # Var 3 # Var 4) [B, C]
+  let (x, y, z, w, v) = (Var 1, Var 2, Var 3, Var 4, Var 5)
+  solve' 31 (x # y # w # z) [B, C]
+  solve' 32 (x # z # w # y) [B, C]
+  solve' 33 (x # w # z # y) [B, C]
+  solve' 34 (x # w # y # z) [B, C] -- Typo in the book
+  solve' 35 (x # y # z # v # w) [B, C]
+  solve' 35 (x # y # w # v # z) [B, C]
+  solve' 35 (x # y # v # w # z) [B, C]
+  solve' 35 (x # y # v # z # w) [B, C]
   solve 36 V [CStar, T]
+  solve' 37 (y # (x # z)) [B, C]
+  -- TODO! Too slow...
+  -- solve' 38 (x # (z # y)) [B, T]
+  solve' 39 (y # (z # x)) [B, T]
+  solve' 41 (z # (x # y)) [B, T]
+  solve' 42 (z # (y # x)) [B, T]
+  solve 45 B [Q, T]
+  solve 46 C [Q, T]
+  -- TODO: Too slow:
+  -- solve' 47 (x # w # (y # z)) [B, T]
