@@ -361,16 +361,17 @@ logic, and on with the book...
 
 ### Problems 37-47
 
-Done by BirdsGalore.hs, with the exception of the problems below, and
-some which I haven't found an efficient search for yet (TODO):
+Done by BirdsGalore.hs, with the exception of the problems below.
 
 ```
 Problem 37: X2 (X1 X3) = C B
+Problem 38: X1 (X3 X2) = B (B (T (B B T)) (B B T)) B
 Problem 39: X2 (X3 X1) = B (T B) (B B (B B T))
 Problem 41: X3 (X1 X2) = B T
 Problem 42: X3 (X2 X1) = B (T (B T)) (B B T)
 Problem 45: B = Q T (Q Q)
 Problem 46: C = Q Q (Q T)
+Problem 47: X1 X4 (X2 X3) = B B C
 ```
 
 ### Problem 37

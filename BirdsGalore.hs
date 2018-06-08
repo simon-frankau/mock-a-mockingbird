@@ -139,13 +139,33 @@ findExpr target avail = head $ filter isTarget $ allExprsOf avail where
   (targetWithVars, nVars) = getTarget target
   isTarget candidate = applyReduce candidate nVars == targetWithVars
 
--- Find an pretty-print a solution
+-- Find and pretty-print a solution
 solve :: (GetTarget a, Show a) =>
          Integer -> a -> [Combinator] -> IO ()
 solve problemNum target avail = do
   let solution = findExpr target avail
   putStrLn $ "Problem " ++ show problemNum ++ ": " ++
              show target ++ " = " ++ show solution
+
+-- Perform a substitution over an expression
+subst :: [(Combinator, Expr)] -> Expr -> Expr
+subst mapping = aux where
+  aux (Ap e1 e2) = Ap (aux e1) (aux e2)
+  aux (Co c) = fromJust $ lookup c mapping
+  aux v@(Var _) = v
+
+-- Find and pretty-print a solution, using an intermediate set of
+-- combinators.
+solve2 :: (GetTarget a, Show a) =>
+          Integer -> a -> [Combinator] -> [Combinator] -> IO ()
+solve2 problemNum target avail1 avail2 = do
+  let sol1 = findExpr target avail1
+      -- Build a dictionary of how to express combinators in avail1 in
+      -- terms of combinators in avail2.
+      elts = map (id &&& flip findExpr avail2) avail1
+      sol2 = fromJust $ boundSteps maxSteps $ subst elts sol1
+  putStrLn $ "Problem " ++ show problemNum ++ ": " ++
+             show target ++ " = " ++ show sol2
 
 main = do
   solve 13 M [W, K]
@@ -163,12 +183,8 @@ main = do
   solve 27 V [C, F]
   -- Too slow - search space is too big.
   -- solve 27 V [B, T]
-  -- Instead, we know V = C F
-  let c = findExpr C [B, T]
-      f = findExpr F [B, T]
-      v = Ap c f
-  putStrLn $ "Problem 27: V = " ++
-             show (fromJust $ boundSteps maxSteps v)
+  -- Instead, we go via V = C F
+  solve2 27 V [C, F] [B, T]
   solve 28 V [F, R]
   solve 29 F [C, V]
   solve 30 I [R, K]
@@ -185,12 +201,14 @@ main = do
   solve 35 (x # y # v # z # w) [B, C]
   solve 36 V [CStar, T]
   solve 37 (y # (x # z)) [B, C]
-  -- TODO! Too slow...
+  -- Too slow...
   -- solve 38 (x # (z # y)) [B, T]
+  solve2 38 (x # (z # y)) [B, C, T] [B, T]
   solve 39 (y # (z # x)) [B, T]
   solve 41 (z # (x # y)) [B, T]
   solve 42 (z # (y # x)) [B, T]
   solve 45 B [Q, T]
   solve 46 C [Q, T]
-  -- TODO: Too slow:
+  -- Too slow...
   -- solve 47 (x # w # (y # z)) [B, T]
+  solve 47 (x # w # (y # z)) [B, C, T]
