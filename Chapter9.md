@@ -3,6 +3,12 @@
 I found 1-3 really much harder than the rest of the questions in this
 chapter.
 
+I notice a bunch of my answers are a bit more constructive than those
+given in the book, and may in places be a little invalid as they rely
+on assumptions that are true in how we tend to actually play with
+combinators (with looser definitions of equality, etc.), but aren't
+allowed in this slightly formalised setting.
+
 ## To Mock a Mockingbird
 
 ### Problem 1
@@ -43,7 +49,6 @@ X X = (M . M) (M . M)
 ```
 
 So, `(X X)` is its own fixed point.
-
 
 (This is `Y M`.)
 
@@ -128,10 +133,18 @@ M (K . M) x = (K . M) (K . M) x
 
 ### Problem 10
 
+I read this as:
+
 For all z, `x z = y`. Deos this mean `x a = y a` for some a?
 
 `x a = y`, so this is only true if `y = y a` for some a - and it's
 quite possible to create a bird that never returns itself.
+
+However, that's not what the question asks. It asks "is it fond?" (`x
+y = y`), not "is it agreeable"? D'oh. It's obviously fond, if it's
+fixated.
+
+D'oh.
 
 ### Problem 11
 
