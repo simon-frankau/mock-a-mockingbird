@@ -8,7 +8,8 @@ import Data.Maybe(fromJust)
 ------------------------------------------------------------------------
 -- Expression type and pretty-printer
 
-data Combinator = W | K | M | I | C | T | B | R | F | E | V | CStar | Q
+data Combinator = W | K | M | I | C | T | B | R | F | E | V | CStar |
+                  Q | L | H
                   deriving (Show, Eq, Ord)
 
 data Expr = Ap Expr Expr
@@ -44,6 +45,8 @@ maxApp E = Just 5
 maxApp V = Just 3
 maxApp CStar = Just 4
 maxApp Q = Just 3
+maxApp L = Nothing
+maxApp H = Nothing
 
 i `lessThanMaxApp` x =
   case maxApp x of
@@ -74,6 +77,8 @@ step         (Ap (Ap (Ap (Co F) x) y) z)       = Just $ z # y # x
 step (Ap (Ap (Ap (Ap (Ap (Co E) x) y) z) w) v) = Just $ x # y # (z # w # v)
 step         (Ap (Ap (Ap (Co V) x) y) z)       = Just $ z # x # y
 step         (Ap (Ap (Ap (Co Q) x) y) z)       = Just $ y # (x # z)
+step             (Ap (Ap (Co L) x) y)          = Just $ x # (y # y)
+step         (Ap (Ap (Ap (Co H) x) y) z)       = Just $ x # y # (z # y)
 step (Ap (Ap (Ap (Ap (Co CStar) x) y) z) w)    = Just $ x # y # w # z
 -- No match? Then try digging down the left.
 step (Ap l r) = flip Ap r <$> step l
@@ -168,6 +173,7 @@ solve2 problemNum target avail1 avail2 = do
              show target ++ " = " ++ show sol2
 
 main = do
+  putStrLn "Chapter 11"
   solve 13 M [W, K]
   solve 14 M [W, I]
   solve 15 I [W, K]
@@ -211,4 +217,22 @@ main = do
   solve 46 C [Q, T]
   -- Too slow...
   -- solve 47 (x # w # (y # z)) [B, T]
-  solve 47 (x # w # (y # z)) [B, C, T]
+  solve2 47 (x # w # (y # z)) [B, C, T] [B, T]
+
+  -- TODO: Contains a bunch of too-slow entries.
+  putStrLn "Chapter 12"
+  solve 1 (x # y # (x # y)) [B, M]
+  solve 2 L [B, C, M]
+  solve 3 L [B, W]
+  -- solve 4 L [M, Q]
+  solve 5 (y # x # x) [B, R, M]
+  solve 6 W [B, R, C, M]
+  solve2 7 W [B, R, C, M] [B, T, M]
+  solve 8 M [B, T, W]
+  -- solve 9 (x # y # z # z) [B, T, M]
+  -- solve 9 (x # y # z # w # w) [B, T, M]
+  solve 10 H [B, C, W]
+  -- solve2 10 H [B, C, W] [B, M, T]
+  solve 11 W [B, C, H]
+  solve 11 W [C, H]
+  solve 11 W [R, H]
