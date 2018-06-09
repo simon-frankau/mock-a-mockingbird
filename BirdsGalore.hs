@@ -10,7 +10,7 @@ import Data.Maybe(fromJust)
 -- Expression type and pretty-printer
 
 data Combinator = W | K | M | I | C | T | B | R | F | E | V | CStar |
-                  Q | L | H
+                  Q | L | H | S | G
                   deriving (Show, Eq, Ord)
 
 data Expr = Ap Expr Expr
@@ -48,6 +48,8 @@ maxApp CStar = Just 4
 maxApp Q = Just 3
 maxApp L = Nothing
 maxApp H = Nothing
+maxApp S = Nothing
+maxApp G = Just 4
 
 i `lessThanMaxApp` x =
   case maxApp x of
@@ -79,7 +81,9 @@ step (Ap (Ap (Ap (Ap (Ap (Co E) x) y) z) w) v) = Just $ x # y # (z # w # v)
 step         (Ap (Ap (Ap (Co V) x) y) z)       = Just $ z # x # y
 step         (Ap (Ap (Ap (Co Q) x) y) z)       = Just $ y # (x # z)
 step             (Ap (Ap (Co L) x) y)          = Just $ x # (y # y)
-step         (Ap (Ap (Ap (Co H) x) y) z)       = Just $ x # y # (z # y)
+step         (Ap (Ap (Ap (Co H) x) y) z)       = Just $ x # y # z # y
+step         (Ap (Ap (Ap (Co S) x) y) z)       = Just $ x # z # (y # z)
+step     (Ap (Ap (Ap (Ap (Co G) x) y) z) w)    = Just $ x # w # (y # z)
 step (Ap (Ap (Ap (Ap (Co CStar) x) y) z) w)    = Just $ x # y # w # z
 -- No match? Then try digging down further, left biasing.
 step (Ap l r) = (flip Ap r <$> step l) <|> (Ap l <$> step r)
@@ -217,8 +221,8 @@ main = do
   solve 45 B [Q, T]
   solve 46 C [Q, T]
   -- Too slow...
-  -- solve 47 (x # w # (y # z)) [B, T]
-  solve2 47 (x # w # (y # z)) [B, C, T] [B, T]
+  -- solve 47 G [B, T]
+  solve2 47 G [B, C, T] [B, T]
 
   putStrLn "Chapter 12"
   solve 1 (x # y # (x # y)) [B, M]
@@ -235,3 +239,12 @@ main = do
   solve2 10 H [B, C, W] [B, T, C, M]
   solve 11 W [C, H]
   solve 11 W [R, H]
+  solve 12 S [B, W, G]
+  solve 12 S [B, W, G]
+  solve 12 S [B, C, W]
+  solve 13 H [S, C]
+  solve 13 H [S, R]
+  solve 14 W [S, C]
+  solve 14 W [S, R]
+  solve 15 W [T, S]
+  solve 16 M [T, S]
