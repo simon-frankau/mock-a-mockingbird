@@ -1,5 +1,6 @@
 module BirdsGalore where
 
+import Control.Applicative((<|>))
 import Control.Arrow((&&&))
 import Control.Monad(forM_)
 
@@ -80,8 +81,8 @@ step         (Ap (Ap (Ap (Co Q) x) y) z)       = Just $ y # (x # z)
 step             (Ap (Ap (Co L) x) y)          = Just $ x # (y # y)
 step         (Ap (Ap (Ap (Co H) x) y) z)       = Just $ x # y # (z # y)
 step (Ap (Ap (Ap (Ap (Co CStar) x) y) z) w)    = Just $ x # y # w # z
--- No match? Then try digging down the left.
-step (Ap l r) = flip Ap r <$> step l
+-- No match? Then try digging down further, left biasing.
+step (Ap l r) = (flip Ap r <$> step l) <|> (Ap l <$> step r)
 -- Still didn't work?
 step _ = Nothing
 
@@ -219,7 +220,6 @@ main = do
   -- solve 47 (x # w # (y # z)) [B, T]
   solve2 47 (x # w # (y # z)) [B, C, T] [B, T]
 
-  -- TODO: Contains a bunch of too-slow entries.
   putStrLn "Chapter 12"
   solve 1 (x # y # (x # y)) [B, M]
   solve 2 L [B, C, M]
@@ -229,10 +229,9 @@ main = do
   solve 6 W [B, R, C, M]
   solve2 7 W [B, R, C, M] [B, T, M]
   solve 8 M [B, T, W]
-  -- solve 9 (x # y # z # z) [B, T, M]
-  -- solve 9 (x # y # z # w # w) [B, T, M]
+  solve 9 (x # y # z # z) [B, T, C, M]
+  solve 9 (x # y # z # w # w) [B, T, C, M]
   solve 10 H [B, C, W]
-  -- solve2 10 H [B, C, W] [B, M, T]
-  solve 11 W [B, C, H]
+  solve2 10 H [B, C, W] [B, T, C, M]
   solve 11 W [C, H]
   solve 11 W [R, H]
