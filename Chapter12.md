@@ -51,3 +51,63 @@ The summary at the end of the chapter seems to be that "B, [TC],
 [MWS], I" forms a useful basis, no matter which bits you pick.
 
 (A basis for what? I think the next chapter starts to help on that.)
+
+## Extra exercises
+
+NB: Gamma should be defined `Gamma x y z w v = y (z w) (x y z w v)`.
+
+The first few exercises can be done from BirdsGalore.hs:
+
+```
+Problem 1: G1 = B (B B C)
+Problem 1: X1 X4 (X1 X4) (X2 X3) = G1 (B M)
+Problem 1: I2 = B (T I) (T I)
+Problem 1: I2 (F X1) -> X1 vs X1 - OK!
+Problem 1: G1 (B M) F (Q I2) X1 X2 -> X1 X2 X2 vs X1 X2 X2 - OK!
+Problem 2: B (B (B W) C) (B B) X1 X2 X3 -> X1 X3 (X2 X3) vs X1 X3 (X2 X3) - OK!
+Problem 3: X1 (X2 X4) (X3 X4) = B (B S) B
+Problem 4: X1 (X2 X3) (X2 X4) = B H (B B (B B))
+Problem 5: X2 (X3 X4) (X1 X2 X3 X4 X5) = Phi (Phi (Phi B)) B
+Problem 5: X1 (X2 X3) (X2 X4) = Phi (Phi (Phi B)) B (K K)
+```
+
+### Exercise 6
+
+a) From inspection, `S' = C S`.
+b) From inspection, `W = S' I`.
+
+## Exercise 7
+
+For this one, I'll try to reverse engineer the structure and find the
+arity at each step that allows us to make steps forward to the
+structure we want.
+
+```
+C (Q a b) W x y z
+  = Q a W b x y z
+  = W (a b) x y z
+  = (a b) x x y z
+
+Try a = Q c
+
+  = Q c b x x y z
+  = b (c x) x y z
+
+Try b = Q d
+
+  = Q d (c x) x y z
+  = (c x) (d x) y z
+
+Try c = Q
+
+  = Q x (d x) y z
+  = (d x) (x y) z
+
+Try d = Q
+
+  = Q x (x y) z
+  = (x y) (x z)
+  = S x y z
+```
+
+So, `Qhat = Q (Q Q) (Q Q)`.

@@ -10,7 +10,7 @@ import Data.Maybe(fromJust)
 -- Expression type and pretty-printer
 
 data Combinator = W | K | M | I | C | T | B | R | F | E | V | CStar |
-                  Q | L | H | S | G
+                  Q | L | H | S | G | G1 | I2 | Phi
                   deriving (Show, Eq, Ord)
 
 data Expr = Ap Expr Expr
@@ -33,23 +33,26 @@ show' _ (Var i) = "X" ++ show i
 -- Maximum number of times a combinator can be applied before it can be
 -- fully reduced. "Nothing" if that doesn't apply.
 maxApp :: Combinator -> Maybe Integer
-maxApp W = Nothing -- Repeated use of variable means it can expand expressions.
-maxApp K = Just 2
-maxApp M = Nothing -- Ditto
-maxApp I = Just 1
-maxApp C = Just 3
-maxApp T = Just 2
-maxApp B = Just 3
-maxApp R = Just 3
-maxApp F = Just 3
-maxApp E = Just 5
-maxApp V = Just 3
+maxApp W  = Nothing -- Repeated use of variable means it can expand expressions.
+maxApp K  = Just 2
+maxApp M  = Nothing -- Ditto
+maxApp I  = Just 1
+maxApp C  = Just 3
+maxApp T  = Just 2
+maxApp B  = Just 3
+maxApp R  = Just 3
+maxApp F  = Just 3
+maxApp E  = Just 5
+maxApp V  = Just 3
 maxApp CStar = Just 4
-maxApp Q = Just 3
-maxApp L = Nothing
-maxApp H = Nothing
-maxApp S = Nothing
-maxApp G = Just 4
+maxApp Q  = Just 3
+maxApp L  = Nothing
+maxApp H  = Nothing
+maxApp S  = Nothing
+maxApp G  = Just 4
+maxApp G1 = Just 5
+maxApp I2 = Nothing
+maxApp Phi = Nothing
 
 i `lessThanMaxApp` x =
   case maxApp x of
@@ -68,23 +71,26 @@ exprOfSize xs = aux 0 where
 
 step :: Expr -> Maybe Expr
 -- Actual combinator cases
-step             (Ap (Ap (Co W) x) y)          = Just $ x # y # y
-step             (Ap (Ap (Co K) x) y)          = Just $ x
-step                 (Ap (Co M) x)             = Just $ x # x
-step                 (Ap (Co I) x)             = Just $ x
-step         (Ap (Ap (Ap (Co C) x) y) z)       = Just $ x # z # y
-step             (Ap (Ap (Co T) x) y)          = Just $ y # x
-step         (Ap (Ap (Ap (Co B) x) y) z)       = Just $ x # (y # z)
-step         (Ap (Ap (Ap (Co R) x) y) z)       = Just $ y # z # x
-step         (Ap (Ap (Ap (Co F) x) y) z)       = Just $ z # y # x
-step (Ap (Ap (Ap (Ap (Ap (Co E) x) y) z) w) v) = Just $ x # y # (z # w # v)
-step         (Ap (Ap (Ap (Co V) x) y) z)       = Just $ z # x # y
-step         (Ap (Ap (Ap (Co Q) x) y) z)       = Just $ y # (x # z)
-step             (Ap (Ap (Co L) x) y)          = Just $ x # (y # y)
-step         (Ap (Ap (Ap (Co H) x) y) z)       = Just $ x # y # z # y
-step         (Ap (Ap (Ap (Co S) x) y) z)       = Just $ x # z # (y # z)
-step     (Ap (Ap (Ap (Ap (Co G) x) y) z) w)    = Just $ x # w # (y # z)
-step (Ap (Ap (Ap (Ap (Co CStar) x) y) z) w)    = Just $ x # y # w # z
+step             (Ap (Ap (Co W)  x) y)          = Just $ x # y # y
+step             (Ap (Ap (Co K)  x) y)          = Just $ x
+step                 (Ap (Co M)  x)             = Just $ x # x
+step                 (Ap (Co I)  x)             = Just $ x
+step                 (Ap (Co I2) x)             = Just $ x # Co I # Co I
+step         (Ap (Ap (Ap (Co C)  x) y) z)       = Just $ x # z # y
+step             (Ap (Ap (Co T)  x) y)          = Just $ y # x
+step         (Ap (Ap (Ap (Co B)  x) y) z)       = Just $ x # (y # z)
+step         (Ap (Ap (Ap (Co R)  x) y) z)       = Just $ y # z # x
+step         (Ap (Ap (Ap (Co F)  x) y) z)       = Just $ z # y # x
+step (Ap (Ap (Ap (Ap (Ap (Co E)  x) y) z) w) v) = Just $ x # y # (z # w # v)
+step         (Ap (Ap (Ap (Co V)  x) y) z)       = Just $ z # x # y
+step         (Ap (Ap (Ap (Co Q)  x) y) z)       = Just $ y # (x # z)
+step             (Ap (Ap (Co L)  x) y)          = Just $ x # (y # y)
+step         (Ap (Ap (Ap (Co H)  x) y) z)       = Just $ x # y # z # y
+step         (Ap (Ap (Ap (Co S)  x) y) z)       = Just $ x # z # (y # z)
+step     (Ap (Ap (Ap (Ap (Co G)  x) y) z) w)    = Just $ x # w # (y # z)
+step (Ap (Ap (Ap (Ap (Co CStar)  x) y) z) w)    = Just $ x # y # w # z
+step (Ap (Ap (Ap (Ap (Ap (Co G1) x) y) z) w) v) = Just $ x # y # v # (z # w)
+step     (Ap (Ap (Ap (Ap (Co Phi) x) y) z) w)   = Just $ x # (y # w) # (z # w)
 -- No match? Then try digging down further, left biasing.
 step (Ap l r) = (flip Ap r <$> step l) <|> (Ap l <$> step r)
 -- Still didn't work?
@@ -97,7 +103,16 @@ boundSteps i x = case step x of
   Just x' -> boundSteps (i - 1) x'
   Nothing -> return x
 
-a # b = Ap a b
+class Exprable a where
+  exprise :: a -> Expr
+
+instance Exprable Expr where
+  exprise = id
+
+instance Exprable Combinator where
+  exprise = Co
+
+a # b = Ap (exprise a) (exprise b)
 
 ------------------------------------------------------------------------
 -- Print the reductions
@@ -106,9 +121,11 @@ allExprsOf xs = concatMap (exprOfSize xs) [1..]
 
 maxSteps = 10
 
-isOnlyVars (Ap x y) = isOnlyVars x && isOnlyVars y
-isOnlyVars (Var _)  = True
-isOnlyVars (Co  _)  = False
+-- Adding more variables will do nothing when the top-level
+-- left-hand-most leaf node is a variable.
+enoughVars (Ap x y) = enoughVars x
+enoughVars (Var _)  = True
+enoughVars (Co  _)  = False
 
 applyNVars :: Expr -> Integer -> Expr
 applyNVars e = aux where
@@ -123,7 +140,7 @@ maxVar _ = 0
 -- Find the number of vars required to fully reduce an expression
 findNVars :: Expr -> Integer
 findNVars e = fst $ head $
-              filter (isOnlyVars . snd) $
+              filter (enoughVars . snd) $
               map (id &&& (fromJust . boundSteps maxSteps . applyNVars e)) $
               [0..]
 
@@ -176,6 +193,19 @@ solve2 problemNum target avail1 avail2 = do
       sol2 = fromJust $ boundSteps maxSteps $ subst elts sol1
   putStrLn $ "Problem " ++ show problemNum ++ ": " ++
              show target ++ " = " ++ show sol2
+
+-- Check the first expression reduces to the second
+checkReduction :: Integer -> Expr -> Expr -> IO ()
+checkReduction problemNum source target = do
+  let reducedSource = case boundSteps maxSteps source of
+        Just res -> res
+        Nothing  -> source
+      status = if reducedSource == target
+               then "OK!"
+               else "FAILED"
+  putStrLn $ "Problem " ++ show problemNum ++ ": " ++
+             show source ++ " -> " ++ show reducedSource ++ " vs " ++
+             show target ++ " - " ++ status
 
 main = do
   putStrLn "Chapter 11"
@@ -248,3 +278,19 @@ main = do
   solve 14 W [S, R]
   solve 15 W [T, S]
   solve 16 M [T, S]
+
+  putStrLn "Chapter 12 exercises"
+  solve 1 G1 [B, C, T]
+  let g2 = x # w # (x # w) # (y # z)
+  solve 1 g2 [B, G1, M]
+  solve 1 I2 [B, T, I]
+  checkReduction 1 (I2 # (F # x)) x
+  let g2Expr = findExpr g2 [B, G1, M]
+  checkReduction 1 (g2Expr # F # (Q # I2) # x # y) (x # y # y)
+  checkReduction 2 (B # (B # (B # W) # C) # (B # B) # x # y # z)
+                   (x # z # (y # z))
+  solve 3 (x # (y # w) # (z # w)) [S, B]
+  solve 4 (x # (y # z) # (y # w)) [B, C, H, W]
+  -- NB: Typo in book missed the extra 'z'.
+  solve 5 (y # (z # w) # (x # y # z # w # v)) [Phi, B]
+  solve 5 (x # (y # z) # (y # w)) [Phi, B, K]

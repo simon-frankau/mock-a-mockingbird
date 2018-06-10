@@ -237,6 +237,8 @@ Problem 35: X1 X2 X5 X3 X4 = B (B (B C) C)
 Problem 36: V = CStar T
 ```
 
+Note that in 34, it should be `V* x y z w = x w y z`.
+
 Having been doing these questions, I've started to wonder if B and T
 or B and C perform the same function as B does for bracketing, but for
 general transposition of arguments.
