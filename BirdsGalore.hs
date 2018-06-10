@@ -258,7 +258,7 @@ main = do
   solve 1 (x # y # (x # y)) [B, M]
   solve 2 L [B, C, M]
   solve 3 L [B, W]
-  -- solve 4 L [M, Q]
+  solve 4 L [M, Q]
   solve 5 (y # x # x) [B, R, M]
   solve 6 W [B, R, C, M]
   solve2 7 W [B, R, C, M] [B, T, M]

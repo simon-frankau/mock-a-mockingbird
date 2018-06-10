@@ -8,6 +8,7 @@ Using BirdsGalore.hs:
 Problem 1: X1 X2 (X1 X2) = B M
 Problem 2: L = C B M
 Problem 3: L = B W B
+Problem 4: L = Q M
 Problem 5: X2 X1 X1 = B M R
 Problem 6: W = C (B M R)
 Problem 7: W = B (T (B M (B B T))) (B B T)
@@ -78,36 +79,20 @@ b) From inspection, `W = S' I`.
 
 ## Exercise 7
 
-For this one, I'll try to reverse engineer the structure and find the
-arity at each step that allows us to make steps forward to the
-structure we want.
+I've let computer brute-force search do lot, so let's try this one
+manually. Running backwards:
 
 ```
-C (Q a b) W x y z
-  = Q a W b x y z
-  = W (a b) x y z
-  = (a b) x x y z
-
-Try a = Q c
-
-  = Q c b x x y z
-  = b (c x) x y z
-
-Try b = Q d
-
-  = Q d (c x) x y z
-  = (c x) (d x) y z
-
-Try c = Q
-
-  = Q x (d x) y z
-  = (d x) (x y) z
-
-Try d = Q
-
-  = Q x (x y) z
-  = (x y) (x z)
-  = S x y z
+S x y z
+  = x z (y z)
+  = Q y (x z) z
+  = (Q x) (Q y) z z
+  = W ((Q x) (Q y)) z
+  = W (Q Q (Q x) y) z
+  = W (Q Q (Q Q) x y) z
+  = Q (Q Q (Q Q) x) W y z
+  = Q (Q Q (Q Q)) Q x W y z
+  = C (Q (Q Q (Q Q)) Q) W x y z
 ```
 
-So, `Qhat = Q (Q Q) (Q Q)`.
+So, it's `Qhat = Q (Q Q (Q Q)) Q`.
