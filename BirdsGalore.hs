@@ -4,6 +4,7 @@ import Control.Applicative((<|>))
 import Control.Arrow((&&&))
 import Control.Monad(forM_)
 
+import qualified Data.Set as Set
 import Data.Maybe(fromJust)
 
 ------------------------------------------------------------------------
@@ -166,6 +167,32 @@ findExpr target avail = head $ filter isTarget $ allExprsOf avail where
   (targetWithVars, nVars) = getTarget target
   isTarget candidate = applyReduce candidate nVars == targetWithVars
 
+-- R x y z = y z x
+--
+-- M # (B # x # M)
+-- B M (B # x) M
+-- B M (B # x) M
+-- B (B M) B x M
+-- C (B (B M) B) M x
+
+-- Check if an expression forms a fixed-point operator. Written in
+-- quite an imperative style as I'm lazy and bad.
+isFixedPoint :: Expr -> Bool
+isFixedPoint expr = aux maxSteps (expr # x) Set.empty where
+  aux stepsLeft expr seen = case step expr of
+    -- Is it of form (x E), where E is some expression we saw before?
+    Just e@(Ap l r) | l == x && r `Set.member` seen ->
+      True
+    -- Not seen before, but we have steps left? Then iterate.
+    Just e | stepsLeft > 0 ->
+      aux (stepsLeft - 1) e (e `Set.insert` seen)
+    -- Otherwise, it's no fixed-point operator
+    _ ->
+       False
+
+findFixedPoint :: [Combinator] -> Expr
+findFixedPoint = head . filter isFixedPoint . allExprsOf
+
 -- Find and pretty-print a solution
 solve :: (GetTarget a, Show a) =>
          Integer -> a -> [Combinator] -> IO ()
@@ -194,6 +221,13 @@ solve2 problemNum target avail1 avail2 = do
   putStrLn $ "Problem " ++ show problemNum ++ ": " ++
              show target ++ " = " ++ show sol2
 
+-- Find and pretty-print a fixed-point operator, using the given set
+-- of combinators.
+solveFP :: Integer -> [Combinator] -> IO ()
+solveFP problemNum avail = do
+  let solution = findFixedPoint avail
+  putStrLn $ "Problem " ++ show problemNum ++ ": " ++ show solution
+
 -- Check the first expression reduces to the second
 checkReduction :: Integer -> Expr -> Expr -> IO ()
 checkReduction problemNum source target = do
@@ -206,6 +240,8 @@ checkReduction problemNum source target = do
   putStrLn $ "Problem " ++ show problemNum ++ ": " ++
              show source ++ " -> " ++ show reducedSource ++ " vs " ++
              show target ++ " - " ++ status
+
+(x, y, z, w, v) = (Var 1, Var 2, Var 3, Var 4, Var 5)
 
 main = do
   putStrLn "Chapter 11"
@@ -231,7 +267,6 @@ main = do
   solve 30 I [R, K]
   -- For the ones where we're not reusing the combinators, don't
   -- bother adding them as actual combinators.
-  let (x, y, z, w, v) = (Var 1, Var 2, Var 3, Var 4, Var 5)
   solve 31 (x # y # w # z) [B, C]
   solve 32 (x # z # w # y) [B, C]
   solve 33 (x # w # z # y) [B, C]
@@ -294,3 +329,12 @@ main = do
   -- NB: Typo in book missed the extra 'z'.
   solve 5 (y # (z # w) # (x # y # z # w # v)) [Phi, B]
   solve 5 (x # (y # z) # (y # w)) [Phi, B, K]
+
+  putStrLn "Chapter 13 exercises"
+  solveFP 1 [M, B, R]
+  solveFP 2 [B, C, M]
+  solveFP 3 [M, B, L]
+  solveFP 4 [M, B, W]
+  solveFP 5 [B, C, W]
+  solveFP 6 [Q, L, W]
+  solveFP 8 [Q, M]
