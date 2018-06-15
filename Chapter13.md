@@ -1,6 +1,6 @@
 # Chapter 13: A Gallery of Sage Birds
 
-## Some Sage Birds and Enter the Queer Bird
+## Some Sage Birds, Enter the Queer Bird, Curry's Sage Bird, The Turing Bird, Owls
 
 Using BirdsGalore.hs:
 

@@ -11,7 +11,7 @@ import Data.Maybe(fromJust)
 -- Expression type and pretty-printer
 
 data Combinator = W | K | M | I | C | T | B | R | F | E | V | CStar |
-                  Q | L | H | S | G | G1 | I2 | Phi
+                  Q | L | H | S | G | G1 | I2 | Phi | U | O
                   deriving (Show, Eq, Ord)
 
 data Expr = Ap Expr Expr
@@ -54,6 +54,8 @@ maxApp G  = Just 4
 maxApp G1 = Just 5
 maxApp I2 = Nothing
 maxApp Phi = Nothing
+maxApp U = Nothing
+maxApp O = Nothing
 
 i `lessThanMaxApp` x =
   case maxApp x of
@@ -92,6 +94,8 @@ step     (Ap (Ap (Ap (Ap (Co G)  x) y) z) w)    = Just $ x # w # (y # z)
 step (Ap (Ap (Ap (Ap (Co CStar)  x) y) z) w)    = Just $ x # y # w # z
 step (Ap (Ap (Ap (Ap (Ap (Co G1) x) y) z) w) v) = Just $ x # y # v # (z # w)
 step     (Ap (Ap (Ap (Ap (Co Phi) x) y) z) w)   = Just $ x # (y # w) # (z # w)
+step             (Ap (Ap (Co U) x) y)           = Just $ y # (x # x # y)
+step             (Ap (Ap (Co O) x) y)           = Just $ y # (x # y)
 -- No match? Then try digging down further, left biasing.
 step (Ap l r) = (flip Ap r <$> step l) <|> (Ap l <$> step r)
 -- Still didn't work?
@@ -331,10 +335,20 @@ main = do
   solve 5 (x # (y # z) # (y # w)) [Phi, B, K]
 
   putStrLn "Chapter 13 exercises"
-  solveFP 1 [M, B, R]
-  solveFP 2 [B, C, M]
-  solveFP 3 [M, B, L]
-  solveFP 4 [M, B, W]
-  solveFP 5 [B, C, W]
-  solveFP 6 [Q, L, W]
-  solveFP 8 [Q, M]
+  solveFP  1   [M, B, R]
+  solveFP  2   [B, C, M]
+  solveFP  3   [M, B, L]
+  solveFP  4   [M, B, W]
+  solveFP  5   [B, C, W]
+  solveFP  6   [Q, L, W]
+  solveFP  8   [Q, M]
+  solveFP  9   [S, L]
+  solveFP 10   [B, W, S]
+  -- "B, M, T or any dervied birds"
+  solve   11 U [B, C, R, V, F, M, T, L, W, S]
+  solveFP 12   [U]
+  solve   13 O [B, C, W]
+  solveFP 14   [O, L]
+  solve   14 U [O, L]
+  solve   15 M [O, I]
+  solve   16 O [S, I]
