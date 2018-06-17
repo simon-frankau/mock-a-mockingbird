@@ -32,3 +32,13 @@ chapters::
           S (K S) (\x -> K x)
           S (K S) K
 ```
+
+In the answer for Problem 3, there appears to be a typo saying `T` is
+`S (K (S I))` when it's `S (K (S I)) K`. Principle 3's example seems
+pretty mangled, too.
+
+"The Secret" is exactly what we learned in undergrad. We also used `B`
+and `C` to shortcut quite so much faffing with recursing into the left
+and right side if it was unnecessary. The book suggests programming
+the algorithm into one of those "home computer" things if you have
+one, so of course I'm going to do exactly that. :)

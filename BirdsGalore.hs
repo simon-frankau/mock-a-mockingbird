@@ -352,3 +352,9 @@ main = do
   solve   14 U [O, L]
   solve   15 M [O, I]
   solve   16 O [S, I]
+
+  putStrLn "Chapter 18"
+  solve 1 I [S, K]
+  solve 2 M [S, I]
+  solve 3 T [S, K, I]
+  solve 4 B [S, K, I]
