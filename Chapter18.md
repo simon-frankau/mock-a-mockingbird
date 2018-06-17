@@ -41,4 +41,4 @@ pretty mangled, too.
 and `C` to shortcut quite so much faffing with recursing into the left
 and right side if it was unnecessary. The book suggests programming
 the algorithm into one of those "home computer" things if you have
-one, so of course I'm going to do exactly that. :)
+one, so of course I've done exactly that. :) The function is "skify".

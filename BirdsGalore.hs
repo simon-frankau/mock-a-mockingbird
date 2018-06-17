@@ -171,13 +171,8 @@ findExpr target avail = head $ filter isTarget $ allExprsOf avail where
   (targetWithVars, nVars) = getTarget target
   isTarget candidate = applyReduce candidate nVars == targetWithVars
 
--- R x y z = y z x
---
--- M # (B # x # M)
--- B M (B # x) M
--- B M (B # x) M
--- B (B M) B x M
--- C (B (B M) B) M x
+------------------------------------------------------------------------
+-- Fixed point stuff
 
 -- Check if an expression forms a fixed-point operator. Written in
 -- quite an imperative style as I'm lazy and bad.
@@ -196,6 +191,30 @@ isFixedPoint expr = aux maxSteps (expr # x) Set.empty where
 
 findFixedPoint :: [Combinator] -> Expr
 findFixedPoint = head . filter isFixedPoint . allExprsOf
+
+------------------------------------------------------------------------
+-- SK converters
+
+hasVar :: Integer -> Expr -> Bool
+hasVar i = aux where
+  aux (Ap l r) = aux l || aux r
+  aux (Co _)   = False
+  aux (Var j)  = i == j
+
+elimVar :: Integer -> Expr -> Expr
+elimVar i = aux where
+  aux ::  Expr -> Expr
+  aux (Var j)        |                     i == j = Co I
+  aux e              | not (hasVar i e)           = K # e
+  aux (Ap l (Var j)) | not (hasVar i l) && i == j = l
+  aux (Ap l r)                                    = S # aux l # aux r
+
+-- Convert a set of variables into an SK combinator
+skify :: Expr -> Expr
+skify e = foldl (flip elimVar) e $ reverse [1 .. maxVar e]
+
+------------------------------------------------------------------------
+-- Solvers
 
 -- Find and pretty-print a solution
 solve :: (GetTarget a, Show a) =>
