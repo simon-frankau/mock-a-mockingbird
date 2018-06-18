@@ -11,7 +11,7 @@ import Data.Maybe(fromJust)
 -- Expression type and pretty-printer
 
 data Combinator = W | K | M | I | C | T | B | R | F | E | V | CStar |
-                  Q | L | H | S | G | G1 | I2 | Phi | U | O
+                  Q | L | H | S | G | G1 | I2 | Phi | U | O | J | J1
                   deriving (Show, Eq, Ord)
 
 data Expr = Ap Expr Expr
@@ -56,6 +56,8 @@ maxApp I2 = Nothing
 maxApp Phi = Nothing
 maxApp U = Nothing
 maxApp O = Nothing
+maxApp J = Nothing
+maxApp J1 = Nothing
 
 i `lessThanMaxApp` x =
   case maxApp x of
@@ -96,6 +98,8 @@ step (Ap (Ap (Ap (Ap (Ap (Co G1) x) y) z) w) v) = Just $ x # y # v # (z # w)
 step     (Ap (Ap (Ap (Ap (Co Phi) x) y) z) w)   = Just $ x # (y # w) # (z # w)
 step             (Ap (Ap (Co U) x) y)           = Just $ y # (x # x # y)
 step             (Ap (Ap (Co O) x) y)           = Just $ y # (x # y)
+step     (Ap (Ap (Ap (Ap (Co J) x) y) z) w)     = Just $ x # y # (x # w # z)
+step     (Ap (Ap (Ap (Ap (Co J1) x) y) z) w)    = Just $ y # x # (w # x # z)
 -- No match? Then try digging down further, left biasing.
 step (Ap l r) = (flip Ap r <$> step l) <|> (Ap l <$> step r)
 -- Still didn't work?
@@ -377,3 +381,12 @@ main = do
   solve 2 M [S, I]
   solve 3 T [S, K, I]
   solve 4 B [S, K, I]
+
+  putStrLn "Chapter 19"
+  solve 1 J [E, B, C, W]
+  solve 2 (x # (z # y)) [J, I]
+  solve 3 T [J, I]
+  solve 4 R [J, T]
+  solve 5 B [C, J, I]
+  solve 6 J1 [J, B, T]
+  solve 7 M [J1, T, C]
