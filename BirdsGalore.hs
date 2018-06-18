@@ -207,7 +207,7 @@ hasVar i = aux where
 
 elimVar :: Integer -> Expr -> Expr
 elimVar i = aux where
-  aux ::  Expr -> Expr
+  aux :: Expr -> Expr
   aux (Var j)        |                     i == j = Co I
   aux e              | not (hasVar i e)           = K # e
   aux (Ap l (Var j)) | not (hasVar i l) && i == j = l
@@ -216,6 +216,28 @@ elimVar i = aux where
 -- Convert a set of variables into an SK combinator
 skify :: Expr -> Expr
 skify e = foldl (flip elimVar) e $ reverse [1 .. maxVar e]
+
+------------------------------------------------------------------------
+-- BCSI converters
+
+elimVarBCSI :: Integer -> Expr -> Expr
+elimVarBCSI i = aux where
+  aux :: Expr -> Expr
+  aux (Var j)
+    | i == j = Co I
+  aux (Ap l (Var j))
+    | not (hasVar i l) && i == j = l
+  aux (Ap l r)
+    | hasVar i l && hasVar i r = S # aux l # aux r
+  aux (Ap l r)
+    | hasVar i l = C # aux l # r
+  aux (Ap l r)
+    | hasVar i r = B # l # aux r
+  aux e = error $ "Var " ++ show i ++ " does not occur in " ++ show e
+
+-- Convert a set of variables into a BCSI combinator
+bcsiify :: Expr -> Expr
+bcsiify e = foldl (flip elimVarBCSI) e $ reverse [1 .. maxVar e]
 
 ------------------------------------------------------------------------
 -- Solvers

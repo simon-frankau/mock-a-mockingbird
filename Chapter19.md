@@ -66,4 +66,13 @@ again, the things I struggled to work out for myself are explained
 more easily here! Having said that, I was dealing with a slightly
 funkier case where "I" isn't available, so I guess it's not all lost.
 
-Of course, I intend to implement the algorithm mentioned in the book.
+Of course, I've implemented the algorithm mentioned in the book:
+
+```
+*BirdsGalore> bcsiify $ x # z # (z # y)
+C (B B S) (C I)
+*BirdsGalore> applyReduce it 3
+Just X1 X3 (X3 X2)
+```
+
+(Yep, that last line is the internal notation for `x z (z y)`.)
