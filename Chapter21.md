@@ -66,3 +66,48 @@ untied version, so the answer is
 
 In the answers, "method 2" is rather fun, being effectively a manual
 application of what the fixed-point combinator does for you.
+
+## Exercises
+
+### Exercise 1
+
+First method gets you `L O (L O)`. Second method gets us `(\y x . x (y
+y x)) (\y x . x (y y x)) = U U`.
+
+### Exercise 2
+
+`(L T) (L T)` or `(C L) (C L)`
+
+### Exercise 3
+
+a. `(L W) (L W)`
+
+b. `(L L) (L L)`
+
+c. `(L (B L M)) (L (B L M))`
+
+### Exercise 4
+
+`(L (B K M)) (L (B K M))`
+
+### Exercise 5
+
+a. `(L R) (L R)`
+
+b. `(L C) (L C)`
+
+c. `(L Q) (L Q)`
+
+### Exercisee 6
+
+Ow. This one blows my mind.
+
+Define `c = A a a b` and `d = A b a b`. Then the fixed point is `A x a
+b = x c d`.
+
+If `x = a`, this becomes `c = a c d`. If `x = b`, this becomes `d = b
+c d`.
+
+I *think* this gets us the infrastructure we need for mutually
+recursive functions, and my head hurts! I think the book rather skips
+over why this thing is interesting.
