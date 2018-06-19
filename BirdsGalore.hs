@@ -412,3 +412,11 @@ main = do
   solve 5 B [C, J, I]
   solve 6 J1 [J, B, T]
   solve 7 M [J1, T, C]
+
+  putStrLn "Chapter 20"
+  solve 1 (z # (x # y)) [G, I]
+  solve 2 T [G, I]
+  solve 3 C [G, I]
+  solve 4 R [C]
+  solve 4 Q [R, G, I]
+  solve 4 B [C, Q]
