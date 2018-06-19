@@ -420,3 +420,8 @@ main = do
   solve 4 R [C]
   solve 4 Q [R, G, I]
   solve 4 B [C, Q]
+
+  putStrLn "Chapter 21"
+  let cs = [B, C, S, I, W, T, M]
+  solve 1 (y # x # (x # y # x))         cs
+  solve 2 ((z # (y # x)) # (y # x # z)) cs

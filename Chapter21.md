@@ -1,6 +1,8 @@
 # Chapter 21: The Fixed Point Principle
 
-## Problem 1
+## Problems
+
+### Problem 1
 
 We want `A y = y A (A y A)`.
 
@@ -43,3 +45,24 @@ A y = A'' A'' y
 
 Woohoo! QED. My memory of how to construct recursive functions using a
 fixed-point operator is not entirely gone!
+
+I decided to do the combinator construction manually as I wanted a bit
+of exercise on this question. Let's try using the tooling:
+
+`X2 X1 (X1 X2 X1) = W (B C (S S))`, so we can also use
+
+```
+(B (W (B C (S S))) M) (B (W (B C (S S))) M)
+```
+
+### Problem 2
+
+Same approach, short-cutted. Solver says `C (B (C (S S T)))` for the
+untied version, so the answer is
+
+```
+(B (C (B (C (S S T)))) M) (B (C (B (C (S S T)))) M)
+```
+
+In the answers, "method 2" is rather fun, being effectively a manual
+application of what the fixed-point combinator does for you.
