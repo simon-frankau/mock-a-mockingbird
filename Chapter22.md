@@ -87,4 +87,166 @@ Contradiction.
 
 ### Problem 10
 
+```
+R I I = I
+R I I (K K) = I (K K)
+I (K K) I = K K
+K K I = K K
+K = K K
+```
+
+Contradiction.
+
+Also:
+
+```
+R I = I
+R I I = I I = I
+```
+
+And:
+
+```
+R = I
+R I I = I I I = I I = I
+```
+
+### Problem 11
+
+```
+R R = R
+R R I I = R I I
+I I R = R I I
+R = R I I
+```
+
+And contradiction from problem 10.
+
+### Problem 12
+
+```
+C C = C
+C C K I K = C K I K
+C I K K = K K I
+I K K = K K I
+K K = K
+```
+
+Contradiction.
+
+### Problem 13
+
+```
+V V = V
+V V I (K K) I = V I (K K) I
+(K K) V I I = I I (K K)
+K I I = I I (K K)
+I = K K
+```
+
+Contradiction.
+
+(I don't think I'd previously proven that `I != K K`, but:
+
+```
+I = K K
+I (K K) = K K (K K)
+K K = K
+```
+
+### Problem 14
+
+a.
+
+```
+W I = I
+W I K = I K
+I K K = K
+K K = K
+```
+
+Contradiction.
+
+b.
+
+```
+W W = W
+W W K K = W K K
+W K K K = K K K
+K K K K = K
+K K = K
+```
+
+Contradiction.
+
+### Problem 15
+
+a.
+
+```
+S I = I
+S I I K = I I K
+I K (I K) = I K
+K (I K) = I K
+K K = K
+```
+
+Contradiction.
+
+Also `S = I` implies `S I = I I = I`, so `S` is not equal to `I`.
+
+b.
+
+```
+S S = S
+S S (K (K K)) K (K K) = S (K (K K)) K (K K)
+S K ((K (K K)) K) (K K) = (K (K K)) (K K) (K (K K))
+K (K K) ((K (K K)) K (K K)) = (K (K K)) (K K) (K (K K))
+(K K) = (K K) (K (K K))
+K K = K
+```
+
+Contradiction (very likely overengineered).
+
+### Problem 16
+
+a.
+
+```
+B K K = K K
+B K K x y = K K x y
+K (K x) y = K K x y
+K x = K y
+```
+
+For all `x`, `y`, there's at least 2 birds, contradiction.
+
+b.
+
+```
+B B = B
+B B K I K K = B K I K K
+B (K I) K K = K (I K) K
+(K I) (K K) = K (I K) K
+I = I K
+I = K
+```
+
+Contradiction.
+
+### Problem 17
+
+Q x y z = y (x z)
+
+```
+Q Q = Q
+Q Q (K K) (K I) K = Q (K K) (K I) K
+(K K) (Q (K I)) = (K I) ((K K) K)
+K = I
+```
+
+Contradiction.
+
+## Kestrels and Infinity
+
 TODO
