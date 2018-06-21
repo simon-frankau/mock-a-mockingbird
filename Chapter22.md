@@ -249,4 +249,47 @@ Contradiction.
 
 ## Kestrels and Infinity
 
-TODO
+### Problem 18
+
+`K K K = K`
+
+### Problem 19
+
+I'll skip the hints and try to work it out for myself.
+
+Let's call `K = K_0`, `K K = K_1`, `K (K K) = K_2` etc.
+
+We have `K_n K = K_{n-1}` for all `n > 0`. So, if we're trying to
+disprove `K_n = K_m` (wlog `n > m`), we just need to disprove `K_{n-m}
+= K`.
+
+To disprove `K_n = K` for `n > 2`, we can use induction, with `K_n K K
+= K K K`, `K_{n-2} = K`, down to a base case of `K_1` or `K_2`. We
+know `K != K K`, so we just need to prove `K != K (K K)`:
+
+Assume
+
+```
+K = K (K K)
+K (K K) K = K (K K) (K K) K
+K K = (K K) K
+K K = K
+```
+
+Contradiction.
+
+## The Answers
+
+Reading the answers in the book, I went round the houses sometimes,
+but I think it worked out ok (I want to get through the book at this
+stage, not optimise all answers!). I think I didn't really realise how
+useful problem 6 would be for shortcutting the solutions of other
+questions.
+
+I found this chapter a bit disappointing for a "Glimpse Into
+Infinity", and it feels really odd put in between meaty questions on
+building recursive combinators and just before we dive into logic and
+arithmetic. However, once again the book finally answers some
+questions that have been nagging me for some time, effectively about
+whether there are equivalent classes over the combinators that make
+everything still work - the answer being "not really".
