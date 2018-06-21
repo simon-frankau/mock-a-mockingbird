@@ -425,3 +425,11 @@ main = do
   let cs = [B, C, S, I, W, T, M]
   solve 1 (y # x # (x # y # x))         cs
   solve 2 ((z # (y # x)) # (y # x # z)) cs
+
+  putStrLn "Chapter 22"
+  solve 2 (x # (y # z # w) # w) cs
+  solve 3 (x # z # (y # z # w)) cs
+  solve 4 (x # (y # z # w) # z) cs
+  -- Too slow to solve, so we'll use the converter.
+  -- solve 5 (x # (y # z # w) # (y # w # z)) cs
+  putStrLn $ "Problem 5: " ++ show (skify (x # (y # z # w) # (y # w # z)))
