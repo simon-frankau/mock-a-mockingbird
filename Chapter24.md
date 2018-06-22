@@ -33,7 +33,7 @@ Contradiction, they're distinct, and so all the numbers are distinct.
 
 ### Problem 2
 
-From Problem 1, we have `Z = C K`.
+From Problem 1, we have `Z = T (C K)`.
 
 ### Problem 3
 
@@ -82,7 +82,7 @@ I notice they don't bother actually deriving the combinator properly,
 so I won't either:
 
 ```
-+ m n = Z n m (V f (a (P n)))
++ m n = Z n m (V f (+ m (P n)))
 ```
 
 ### Problem 6
@@ -93,3 +93,46 @@ so I won't either:
 
 `e n m = Z m 1 (* n (e n (P m)))`
 
+(The answer in the book lacks a `P`.)
+
+## Preparation for the Finale
+
+### Problem 8
+
+`A n = Z n t (Z (P n) f (A (P (P n))))`
+
+The book's answer is neater, but not tail recursive. :)
+
+### Problem 9
+
+`g n m = Z n f (Z m t (g (P n) (P m)))`
+
+### Problem 10
+
+```
+A1 n m = A n m m (A1 n (sigma m))
+
+A' = C A1 0
+```
+
+Hmmm. This minimisation business is ringing a lot of
+computability-theory bells...
+
+### Problem 11
+
+First calculate whether `10^k > n`: `X k n = g (e 10 k) n` (`X = B g
+(e 10)`)
+
+Then minimise it: `A' X`. This gives:
+
+```
+l = A' (B g (e 10))
+```
+
+### Problem 12
+
+```
+concat a b = + b (* a (e 10 (l b)))
+```
+
+Goedel-numbering, anyone?
