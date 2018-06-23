@@ -49,7 +49,7 @@ This will come in useful in the next problem.
 In the meantime, more directly:
 
 ```
-d n = Z n (~0) (concat (~3) (concat s (concat (d (P n)) (~4))))
+d n = Z n (~#0) (concat (~3) (concat s (concat (d (P n)) (~4))))
 ```
 
 ### Problem 2
@@ -88,4 +88,18 @@ QED!
 
 ### Problem 4
 
-TODO
+I'm missing the subtlety about why the "= t" is required.
+
+Do the fixed-point thing from 3, with `A` being the predicate for
+whether the number is a member of the set or not.
+
+### Problem 5
+
+A computable set has a predicate for whether a thing is in the set.
+Compose the predicate with negation. Once again, I'm guessing they'll
+claim subtlety whose reason I don't understand...
+
+### Problem 6
+
+Have a predicate for "the supplied sentence evaluates to false", and
+find the fixed point.
